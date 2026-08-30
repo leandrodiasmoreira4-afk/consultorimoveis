@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.0",
@@ -19,6 +20,7 @@
     "zod": "^4.1.5"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
