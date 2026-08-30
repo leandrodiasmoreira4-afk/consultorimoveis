@@ -7,10 +7,14 @@ export default async function HomePage() {
   return (
     <>
       <section className="hero">
+        <video className="hero-video" autoPlay muted loop playsInline preload="metadata" aria-hidden="true">
+          <source src="/hero-real-estate.mp4" type="video/mp4" />
+        </video>
+        <div className="hero-overlay" aria-hidden="true" />
         <div className="container-wide hero-content">
           <div className="hero-kicker eyebrow">
             <span>Cristian Oliveira · Private Real Estate</span>
-            <span>Pernambuco · Brasil</span>
+            <span>Brasil</span>
           </div>
           <h1>Imóveis extraordinários. Escolhas excepcionais.</h1>
           <div className="hero-actions">
