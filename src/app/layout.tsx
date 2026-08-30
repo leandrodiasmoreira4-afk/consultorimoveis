@@ -11,7 +11,7 @@ const cormorant = Cormorant_Garamond({ subsets: ["latin"], variable: "--font-cor
 
 export const metadata: Metadata = {
   title: "Cristian Oliveira | Private Real Estate",
-  description: "Consultoria imobiliária premium em Pernambuco, Brasil.",
+  description: "Consultoria imobiliária premium no Brasil.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
