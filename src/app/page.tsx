@@ -45,8 +45,8 @@ export default async function HomePage() {
                 <div className="media-placeholder" />
                 <div className="card-meta">
                   <div>
-                    <div className="card-title">{property.title ?? property.propertyType ?? "Imóvel"}</div>
-                    <div className="card-small">{property.areaM2 ? `${property.areaM2} m²` : "Área sob consulta"}</div>
+                    <div className="card-title">{property.title ?? property.property_type ?? "Imóvel"}</div>
+                    <div className="card-small">{property.area_m2 ? `${property.area_m2} m²` : "Área sob consulta"}</div>
                   </div>
                   <div className="card-small">{property.price ? property.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "Valor sob consulta"}</div>
                 </div>
