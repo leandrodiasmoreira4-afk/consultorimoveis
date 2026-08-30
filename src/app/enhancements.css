@@ -32,9 +32,9 @@
 }
 
 .hero h1 {
-  max-width: 760px;
-  font-size: clamp(50px, 6.25vw, 96px);
-  line-height: .9;
+  max-width: 680px;
+  font-size: clamp(44px, 5.25vw, 82px);
+  line-height: .92;
 }
 
 .whatsapp-floating {
@@ -71,8 +71,8 @@
 
 @media (max-width: 860px) {
   .hero h1 {
-    max-width: 560px;
-    font-size: clamp(46px, 12vw, 68px);
+    max-width: 520px;
+    font-size: clamp(40px, 10.5vw, 58px);
   }
 
   .hero-video {
