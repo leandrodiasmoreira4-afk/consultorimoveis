@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AdminPanel } from "@/components/admin/AdminPanel";
+import { RegionCoverManager } from "@/components/admin/RegionCoverManager";
 
 export const metadata: Metadata = {
   title: "Painel administrativo | Cristian Oliveira",
@@ -7,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function AdminPage() {
-  return <AdminPanel />;
+  return <><AdminPanel /><RegionCoverManager /></>;
 }
