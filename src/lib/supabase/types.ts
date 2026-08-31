@@ -33,6 +33,7 @@ export type RegionRow = {
   state: string;
   neighborhood: string | null;
   slug: string;
+  cover_image_path: string | null;
   created_at: string;
   updated_at: string;
 };
