@@ -51,10 +51,11 @@ export default async function HomePage() {
               const cover = property.media.find((media) => media.media_type === "image" && media.signed_url);
               return (
                 <Link href={`/imoveis/${property.slug}`} className="editorial-card" key={property.id}>
-                  <div
-                    className={`media-placeholder ${cover ? "has-image" : ""}`}
-                    style={cover ? { backgroundImage: `url(${cover.signed_url})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
-                  />
+                  {cover?.signed_url ? (
+                    <div style={{ aspectRatio: "4 / 3", backgroundImage: `url(${cover.signed_url})`, backgroundSize: "cover", backgroundPosition: "center", backgroundColor: "var(--ivory-deep)" }} />
+                  ) : (
+                    <div className="media-placeholder" />
+                  )}
                   <div className="card-meta">
                     <div>
                       <div className="card-title">{property.title ?? property.property_type ?? "Imóvel"}</div>
