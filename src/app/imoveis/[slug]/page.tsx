@@ -2,6 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPropertyBySlug } from "@/data/properties";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 type Props = { params: Promise<{ slug: string }> };
 
 export default async function PropertyPage({ params }: Props) {
@@ -9,13 +12,17 @@ export default async function PropertyPage({ params }: Props) {
   const property = await getPropertyBySlug(slug);
   if (!property) notFound();
 
-  const location = [property.region?.city, property.region?.state].filter(Boolean).join(" · ") || "Localização sob consulta";
+  const location = [property.region?.neighborhood, property.region?.city, property.region?.state].filter(Boolean).join(" · ") || "Localização sob consulta";
   const title = property.title ?? property.property_type ?? "Imóvel";
+  const cover = property.media.find((media) => media.media_type === "image" && media.signed_url);
 
   return (
     <>
-      <section className="property-hero">
-        <div className="container-wide property-hero-inner">
+      <section
+        className={`property-hero ${cover ? "has-photo" : ""}`}
+        style={cover ? { backgroundImage: `linear-gradient(180deg, rgba(20,20,18,.08), rgba(20,20,18,.56)), url(${cover.signed_url})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+      >
+        <div className="container-wide property-hero-inner" style={cover ? { color: "var(--ivory)" } : undefined}>
           <div className="eyebrow">{location}</div>
           <h1 className="property-title">{title}</h1>
         </div>
@@ -44,9 +51,17 @@ export default async function PropertyPage({ params }: Props) {
         <div className="container-wide">
           <div className="eyebrow" style={{ marginBottom: 28 }}>Galeria</div>
           <div className="editorial-grid">
-            {property.media.length > 0 ? property.media.slice(0, 4).map((media) => (
+            {property.media.length > 0 ? property.media.slice(0, 8).map((media) => (
               <div className="editorial-card" key={media.id}>
-                <div className="media-placeholder" aria-label={media.alt_text ?? "Mídia do imóvel"} />
+                {media.media_type === "image" && media.signed_url ? (
+                  <div className="media-placeholder has-image" style={{ backgroundImage: `url(${media.signed_url})`, backgroundSize: "cover", backgroundPosition: "center" }} aria-label={media.alt_text ?? "Fotografia do imóvel"} />
+                ) : media.media_type === "video" && media.signed_url ? (
+                  <video controls playsInline style={{ width: "100%", aspectRatio: "4 / 3", objectFit: "cover", background: "#ded5c7" }}>
+                    <source src={media.signed_url} type="video/mp4" />
+                  </video>
+                ) : (
+                  <div className="media-placeholder" aria-label={media.alt_text ?? "Mídia do imóvel"} />
+                )}
               </div>
             )) : (
               <div className="editorial-card" style={{ gridColumn: "1 / -1" }}>
@@ -64,7 +79,7 @@ export default async function PropertyPage({ params }: Props) {
             <h2 className="split-title">Solicite uma visita com acompanhamento pessoal.</h2>
           </div>
           <div>
-            <p style={{ color: "rgba(244,240,232,.68)", maxWidth: 520 }}>O canal oficial será habilitado quando WhatsApp, telefone ou e-mail forem fornecidos e confirmados.</p>
+            <p style={{ color: "rgba(244,240,232,.68)", maxWidth: 520 }}>Fale diretamente com Cristian Oliveira para solicitar informações ou agendar uma visita.</p>
             <Link className="text-link" href="/contato">Solicitar visita <span aria-hidden="true">↗</span></Link>
           </div>
         </div>
