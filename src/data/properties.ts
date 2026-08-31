@@ -1,5 +1,5 @@
 import { getSupabaseClient } from '../lib/supabase/client';
-import type { PropertyWithRelations } from '../lib/supabase/types';
+import type { PropertyMediaRow, PropertyWithRelations } from '../lib/supabase/types';
 import { mockProperties } from './mock-properties';
 
 export type PropertyFilters = {
@@ -51,6 +51,30 @@ export function filterProperties(
   });
 }
 
+async function resolveMedia(media: PropertyMediaRow[]): Promise<PropertyMediaRow[]> {
+  const supabase = getSupabaseClient();
+  const sorted = [...media].sort((a, b) => a.position - b.position);
+  if (!supabase || sorted.length === 0) return sorted;
+
+  return Promise.all(
+    sorted.map(async (item) => {
+      const { data } = await supabase.storage
+        .from('property-media')
+        .createSignedUrl(item.storage_path, 60 * 60);
+
+      return { ...item, signed_url: data?.signedUrl ?? null };
+    }),
+  );
+}
+
+async function hydrateProperty(property: PropertyWithRelations): Promise<PropertyWithRelations> {
+  return {
+    ...property,
+    media: await resolveMedia(property.media ?? []),
+    features: [...(property.features ?? [])].sort((a, b) => a.position - b.position),
+  };
+}
+
 async function fetchPublishedProperties(): Promise<PropertyWithRelations[]> {
   const supabase = getSupabaseClient();
   if (!supabase) return mockProperties;
@@ -69,18 +93,14 @@ async function fetchPublishedProperties(): Promise<PropertyWithRelations[]> {
 
   if (error) {
     if (process.env.NODE_ENV !== 'production') {
-      console.warn('[properties] Supabase unavailable; using safe development fallback.', error.message);
+      console.warn('[properties] Data source unavailable; using safe development fallback.', error.message);
       return mockProperties;
     }
 
     throw new Error(`Failed to load properties: ${error.message}`);
   }
 
-  return (data ?? []).map((property) => ({
-    ...property,
-    media: [...(property.media ?? [])].sort((a, b) => a.position - b.position),
-    features: [...(property.features ?? [])].sort((a, b) => a.position - b.position),
-  })) as PropertyWithRelations[];
+  return Promise.all((data ?? []).map((property) => hydrateProperty(property as PropertyWithRelations)));
 }
 
 export async function getProperties(
@@ -121,10 +141,5 @@ export async function getPropertyBySlug(
   }
 
   if (!data) return null;
-
-  return {
-    ...data,
-    media: [...(data.media ?? [])].sort((a, b) => a.position - b.position),
-    features: [...(data.features ?? [])].sort((a, b) => a.position - b.position),
-  } as PropertyWithRelations;
+  return hydrateProperty(data as PropertyWithRelations);
 }
