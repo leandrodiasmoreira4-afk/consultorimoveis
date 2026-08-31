@@ -45,6 +45,7 @@ export type PropertyMediaRow = {
   alt_text: string | null;
   position: number;
   created_at: string;
+  signed_url?: string | null;
 };
 
 export type PropertyFeatureRow = {
