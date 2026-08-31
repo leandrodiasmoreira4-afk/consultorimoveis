@@ -4,8 +4,13 @@ import { getProperties } from "@/data/properties";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export default async function PropertiesPage() {
-  const properties = await getProperties();
+type Props = {
+  searchParams: Promise<{ regiao?: string }>;
+};
+
+export default async function PropertiesPage({ searchParams }: Props) {
+  const { regiao } = await searchParams;
+  const properties = await getProperties(regiao ? { regionSlug: regiao } : {});
   const cities = Array.from(new Set(properties.map((property) => property.region?.city).filter(Boolean))) as string[];
   const types = Array.from(new Set(properties.map((property) => property.property_type).filter(Boolean))) as string[];
 
@@ -36,6 +41,11 @@ export default async function PropertiesPage() {
               <option value="500+">Acima de R$ 500 mil</option>
             </select>
           </form>
+          {regiao && (
+            <div style={{ marginTop: 22 }}>
+              <Link className="text-link" href="/imoveis">Ver todos os imóveis <span aria-hidden="true">↗</span></Link>
+            </div>
+          )}
         </div>
       </section>
 
@@ -43,7 +53,7 @@ export default async function PropertiesPage() {
         <div className="container-wide editorial-grid">
           {properties.length === 0 ? (
             <div className="empty-state" style={{ gridColumn: "1 / -1" }}>
-              <h2>A carteira pública está em preparação.</h2>
+              <h2>{regiao ? "Nenhum imóvel publicado nesta região." : "A carteira pública está em preparação."}</h2>
               <div>
                 <p className="muted">Os imóveis aparecem aqui assim que forem publicados pelo painel administrativo.</p>
                 <Link className="text-link" href="/contato">Pedir uma curadoria <span aria-hidden="true">↗</span></Link>
