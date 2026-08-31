@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { getProperties } from "@/data/properties";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function HomePage() {
   const properties = await getProperties();
 
@@ -44,18 +47,24 @@ export default async function HomePage() {
                   </div>
                 </div>
               </article>
-            ) : properties.slice(0, 2).map((property) => (
-              <Link href={`/imoveis/${property.slug}`} className="editorial-card" key={property.id}>
-                <div className="media-placeholder" />
-                <div className="card-meta">
-                  <div>
-                    <div className="card-title">{property.title ?? property.property_type ?? "Imóvel"}</div>
-                    <div className="card-small">{property.area_m2 ? `${property.area_m2} m²` : "Área sob consulta"}</div>
+            ) : properties.slice(0, 2).map((property) => {
+              const cover = property.media.find((media) => media.media_type === "image" && media.signed_url);
+              return (
+                <Link href={`/imoveis/${property.slug}`} className="editorial-card" key={property.id}>
+                  <div
+                    className={`media-placeholder ${cover ? "has-image" : ""}`}
+                    style={cover ? { backgroundImage: `url(${cover.signed_url})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+                  />
+                  <div className="card-meta">
+                    <div>
+                      <div className="card-title">{property.title ?? property.property_type ?? "Imóvel"}</div>
+                      <div className="card-small">{property.area_m2 ? `${property.area_m2} m²` : "Área sob consulta"}</div>
+                    </div>
+                    <div className="card-small">{property.price ? property.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "Valor sob consulta"}</div>
                   </div>
-                  <div className="card-small">{property.price ? property.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "Valor sob consulta"}</div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
