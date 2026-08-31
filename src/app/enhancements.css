@@ -3,104 +3,22 @@
   isolation: isolate;
   background: #2a2c29;
 }
+.hero-video { position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:center;transform:scale(1.015); }
+.hero-overlay { position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(17,18,16,.10),rgba(17,18,16,.24) 42%,rgba(17,18,16,.72));pointer-events:none; }
+.hero::before{z-index:2}.hero-content{z-index:3}.hero h1{max-width:680px;font-size:clamp(44px,5.25vw,82px);line-height:.92}
 
-.hero-video {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  transform: scale(1.015);
-}
+/* O catálogo ganha uma superfície própria para não desaparecer no ivory geral do site. */
+.page-hero:has(+ .section .editorial-grid){border-bottom:1px solid rgba(54,47,38,.14)}
+.editorial-grid{gap:30px}
+.editorial-card{background:#fffdf8;border:1px solid rgba(60,51,41,.13);box-shadow:0 16px 42px rgba(66,54,40,.055);transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease}
+.editorial-card:hover{transform:translateY(-4px);box-shadow:0 22px 52px rgba(66,54,40,.10);border-color:rgba(157,126,86,.30)}
+.editorial-card .card-meta{padding:20px 18px 22px}
+.editorial-card .card-title{color:#211e19}
+.editorial-card .card-small{color:#756a5d}
+.region-cover{aspect-ratio:16/10;background:linear-gradient(145deg,#d8c7ad,#eee4d5 56%,#a9ad9b);background-size:cover;background-position:center;display:flex;align-items:flex-end;padding:24px;color:#fff}
+.region-cover .eyebrow{color:#fff;text-shadow:0 1px 12px rgba(0,0,0,.28)}
 
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(180deg, rgba(17,18,16,.10), rgba(17,18,16,.24) 42%, rgba(17,18,16,.72));
-  pointer-events: none;
-}
-
-.hero::before {
-  z-index: 2;
-}
-
-.hero-content {
-  z-index: 3;
-}
-
-.hero h1 {
-  max-width: 680px;
-  font-size: clamp(44px, 5.25vw, 82px);
-  line-height: .92;
-}
-
-.whatsapp-floating {
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-  z-index: 70;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 52px;
-  padding: 0 18px;
-  border-radius: 999px;
-  background: #1f211e;
-  color: #f4f0e8;
-  border: 1px solid rgba(244,240,232,.18);
-  box-shadow: 0 16px 42px rgba(13,14,12,.22);
-  font-size: 11px;
-  letter-spacing: .15em;
-  text-transform: uppercase;
-  transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
-}
-
-.whatsapp-floating:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 20px 50px rgba(13,14,12,.3);
-  background: #292b27;
-}
-
-.whatsapp-floating:focus-visible {
-  outline: 2px solid #b39a72;
-  outline-offset: 4px;
-}
-
-@media (max-width: 860px) {
-  .hero h1 {
-    max-width: 520px;
-    font-size: clamp(40px, 10.5vw, 58px);
-  }
-
-  .hero-video {
-    transform: none;
-  }
-
-  .whatsapp-floating {
-    right: 14px;
-    bottom: 14px;
-    width: 50px;
-    height: 50px;
-    min-height: 50px;
-    padding: 0;
-    justify-content: center;
-  }
-
-  .whatsapp-floating span {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .whatsapp-floating {
-    transition: none;
-  }
-}
+.whatsapp-floating{position:fixed;right:24px;bottom:24px;z-index:70;display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:0 18px;border-radius:999px;background:#1f211e;color:#f4f0e8;border:1px solid rgba(244,240,232,.18);box-shadow:0 16px 42px rgba(13,14,12,.22);font-size:11px;letter-spacing:.15em;text-transform:uppercase;transition:transform .25s ease,box-shadow .25s ease,background .25s ease}
+.whatsapp-floating:hover{transform:translateY(-3px);box-shadow:0 20px 50px rgba(13,14,12,.3);background:#292b27}.whatsapp-floating:focus-visible{outline:2px solid #b39a72;outline-offset:4px}
+@media(max-width:860px){.hero h1{max-width:520px;font-size:clamp(40px,10.5vw,58px)}.hero-video{transform:none}.whatsapp-floating{right:14px;bottom:14px;width:50px;height:50px;min-height:50px;padding:0;justify-content:center}.whatsapp-floating span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.editorial-grid{gap:20px}}
+@media(prefers-reduced-motion:reduce){.whatsapp-floating,.editorial-card{transition:none}}
