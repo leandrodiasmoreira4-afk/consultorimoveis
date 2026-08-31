@@ -19,10 +19,10 @@ export default async function PropertyPage({ params }: Props) {
   return (
     <>
       <section
-        className={`property-hero ${cover ? "has-photo" : ""}`}
-        style={cover ? { backgroundImage: `linear-gradient(180deg, rgba(20,20,18,.08), rgba(20,20,18,.56)), url(${cover.signed_url})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+        className="property-hero"
+        style={cover?.signed_url ? { backgroundImage: `linear-gradient(180deg, rgba(20,20,18,.08), rgba(20,20,18,.56)), url(${cover.signed_url})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
       >
-        <div className="container-wide property-hero-inner" style={cover ? { color: "var(--ivory)" } : undefined}>
+        <div className="container-wide property-hero-inner" style={cover?.signed_url ? { color: "var(--ivory)" } : undefined}>
           <div className="eyebrow">{location}</div>
           <h1 className="property-title">{title}</h1>
         </div>
@@ -54,7 +54,7 @@ export default async function PropertyPage({ params }: Props) {
             {property.media.length > 0 ? property.media.slice(0, 8).map((media) => (
               <div className="editorial-card" key={media.id}>
                 {media.media_type === "image" && media.signed_url ? (
-                  <div className="media-placeholder has-image" style={{ backgroundImage: `url(${media.signed_url})`, backgroundSize: "cover", backgroundPosition: "center" }} aria-label={media.alt_text ?? "Fotografia do imóvel"} />
+                  <div style={{ width: "100%", aspectRatio: "4 / 3", backgroundImage: `url(${media.signed_url})`, backgroundSize: "cover", backgroundPosition: "center", backgroundColor: "var(--ivory-deep)" }} aria-label={media.alt_text ?? "Fotografia do imóvel"} />
                 ) : media.media_type === "video" && media.signed_url ? (
                   <video controls playsInline style={{ width: "100%", aspectRatio: "4 / 3", objectFit: "cover", background: "#ded5c7" }}>
                     <source src={media.signed_url} type="video/mp4" />
