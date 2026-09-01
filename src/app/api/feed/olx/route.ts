@@ -1,8 +1,33 @@
 import { NextRequest } from "next/server";
 import { getPublicServerSupabase } from "@/lib/supabase/public-server";
+import { getServerAdminSupabase } from "@/lib/supabase/server-admin";
 import { buildVrsyncXml, validateOlxProperty, type OlxProfile, type OlxProperty } from "@/lib/olx/vrsync";
 
 export const dynamic = "force-dynamic";
+
+async function logFeed(channelId: string | null, status: "success" | "error" | "info", message: string, metadata: Record<string, unknown> = {}) {
+  const admin = getServerAdminSupabase();
+  if (!admin) return;
+
+  if (status === "success" && channelId) {
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count } = await admin
+      .from("feed_logs")
+      .select("id", { head: true, count: "exact" })
+      .eq("channel_id", channelId)
+      .eq("event_type", "feed_generated")
+      .gte("created_at", oneHourAgo);
+    if ((count ?? 0) > 0) return;
+  }
+
+  await admin.from("feed_logs").insert({
+    channel_id: channelId,
+    event_type: status === "success" ? "feed_generated" : "feed_generation_error",
+    status,
+    message,
+    metadata,
+  });
+}
 
 export async function GET(request: NextRequest) {
   const supabase = getPublicServerSupabase();
@@ -14,7 +39,10 @@ export async function GET(request: NextRequest) {
     .eq("code", "olx")
     .maybeSingle();
 
-  if (channelError) return new Response("Could not load OLX channel", { status: 500 });
+  if (channelError) {
+    await logFeed(null, "error", "Falha ao carregar o canal OLX.", { error: channelError.message });
+    return new Response("Could not load OLX channel", { status: 500 });
+  }
 
   const { data: profileData } = await supabase
     .from("consultant_profiles")
@@ -23,7 +51,6 @@ export async function GET(request: NextRequest) {
     .maybeSingle();
 
   const profile = (profileData ?? { display_name: null, email: null, phone: null, whatsapp: null }) as OlxProfile;
-
   let listings: Array<{ property: OlxProperty; externalId: string }> = [];
 
   if (channel?.enabled) {
@@ -33,7 +60,10 @@ export async function GET(request: NextRequest) {
       .eq("channel_id", channel.id)
       .in("status", ["pending", "published"]);
 
-    if (publicationError) return new Response("Could not load OLX publications", { status: 500 });
+    if (publicationError) {
+      await logFeed(channel.id, "error", "Falha ao carregar publicações OLX.", { error: publicationError.message });
+      return new Response("Could not load OLX publications", { status: 500 });
+    }
 
     const propertyIds = (publications ?? []).map((item) => item.property_id);
     if (propertyIds.length) {
@@ -43,23 +73,36 @@ export async function GET(request: NextRequest) {
         .in("id", propertyIds)
         .eq("status", "published");
 
-      if (propertyError) return new Response("Could not load feed properties", { status: 500 });
+      if (propertyError) {
+        await logFeed(channel.id, "error", "Falha ao carregar imóveis do feed OLX.", { error: propertyError.message });
+        return new Response("Could not load feed properties", { status: 500 });
+      }
 
       const publicationMap = new Map((publications ?? []).map((item) => [item.property_id, item]));
-      listings = ((properties ?? []) as unknown as OlxProperty[])
-        .filter((property) => validateOlxProperty(property, profile).length === 0)
-        .map((property) => ({
+      const admin = getServerAdminSupabase();
+
+      for (const property of (properties ?? []) as unknown as OlxProperty[]) {
+        const errors = validateOlxProperty(property, profile);
+        const publication = publicationMap.get(property.id);
+
+        if (errors.length) {
+          if (admin && publication) {
+            await admin.from("property_publications").update({ status: "failed", last_error: errors.join(" ") }).eq("property_id", property.id).eq("channel_id", channel.id);
+            await admin.from("feed_logs").insert({ channel_id: channel.id, property_id: property.id, event_type: "validation_error", status: "error", message: errors.join(" ") });
+          }
+          continue;
+        }
+
+        listings.push({
           property,
-          externalId: publicationMap.get(property.id)?.external_id ?? `olx-${property.id}`,
-        }));
+          externalId: publication?.external_id ?? `olx-${property.id}`,
+        });
+      }
     }
   }
 
-  const xml = buildVrsyncXml({
-    origin: request.nextUrl.origin,
-    profile,
-    listings,
-  });
+  const xml = buildVrsyncXml({ origin: request.nextUrl.origin, profile, listings });
+  await logFeed(channel?.id ?? null, "success", "Feed OLX gerado com sucesso.", { listings: listings.length, channel_enabled: Boolean(channel?.enabled) });
 
   return new Response(xml, {
     status: 200,
