@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     .maybeSingle();
 
   const profile = (profileData ?? { display_name: null, email: null, phone: null, whatsapp: null }) as OlxProfile;
-  let listings: Array<{ property: OlxProperty; externalId: string }> = [];
+  const listings: Array<{ property: OlxProperty; externalId: string }> = [];
 
   if (channel?.enabled) {
     const { data: publications, error: publicationError } = await supabase
