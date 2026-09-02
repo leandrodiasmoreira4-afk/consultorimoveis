@@ -10,7 +10,15 @@ export default async function HomePage() {
   return (
     <>
       <section className="hero">
-        <video className="hero-video" autoPlay muted loop playsInline preload="metadata" aria-hidden="true">
+        <video
+          className="hero-video"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+        >
           <source src="/hero-real-estate.mp4" type="video/mp4" />
         </video>
         <div className="hero-overlay" aria-hidden="true" />
