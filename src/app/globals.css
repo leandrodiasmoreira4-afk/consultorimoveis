@@ -46,11 +46,6 @@ button, input, select, textarea { font: inherit; }
   background: var(--charcoal);
   color: var(--ivory);
 }
-.hero::before {
-  content: ""; position: absolute; inset: 0;
-  background-image: linear-gradient(rgba(247,241,231,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(247,241,231,.045) 1px, transparent 1px);
-  background-size: 12.5vw 12.5vw; mask-image: linear-gradient(to bottom, transparent, black 35%, black 80%, transparent);
-}
 .hero-content { position: relative; z-index: 2; padding-bottom: 72px; }
 .hero-kicker { display: flex; justify-content: space-between; gap: 24px; margin-bottom: 38px; color: rgba(247,241,231,.84); }
 .hero h1 { max-width: 900px; font-family: var(--font-cormorant); font-weight: 400; font-size: clamp(58px, 8vw, 128px); line-height: .86; letter-spacing: -.035em; margin: 0; }
